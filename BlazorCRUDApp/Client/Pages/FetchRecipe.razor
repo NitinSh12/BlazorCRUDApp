@@ -1,0 +1,51 @@
+﻿@page "/fetchrecipe"
+@using BlazorCRUDApp.Shared.Models
+@inject HttpClient Http
+
+<h1>Recipes</h1>
+<p>
+    <a href="/addrecipe">Create New</a>
+</p>
+@if (recipes == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Ingredients</th>
+                <th>Description</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var recipe in recipes)
+            {
+                <tr>
+                    <td>@recipe.RecipeId</td>
+                    <td>@recipe.Name</td>
+                    <td>@recipe.Ingredients</td>
+                    <td>@recipe.Description</td>
+                    <td>@recipe.Notes</td>
+                    <td>
+                        <a href='/editrecipe/@recipe.RecipeId'>Edit</a>  |
+                        <a href='/delete/@recipe.RecipeId'>Delete</a>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+@functions {
+    Recipe[] recipes;
+    protected override async Task OnInitializedAsync()
+    {
+        recipes = await Http.GetJsonAsync<Recipe[]>("api/Recipe/recipes");
+    }
+}  

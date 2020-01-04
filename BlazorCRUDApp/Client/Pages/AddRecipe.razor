@@ -1,0 +1,46 @@
+﻿@using BlazorCRUDApp.Shared.Models
+@page "/addrecipe"
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+
+<h1>Create Recipe</h1>
+<hr />  
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input for="Name" class="form-control" @bind="@recipe.Name" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Ingredients" class="control-label">Ingredients</label>
+                <textarea asp-for="Ingredients" class="form-control" @bind="@recipe.Ingredients" > </textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="Notes" class="control-label">Notes</label>
+                <textarea asp-for="Notes" class="form-control" @bind="@recipe.Notes" > </textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                <textarea asp-for="Description" class="form-control" @bind="@recipe.Description" ></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" @onclick="@(async () => await CreateRecipe())">Save</button>
+                <button class="btn btn-warning" @onclick="@cancel">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@functions {
+    Recipe recipe = new Recipe();
+    protected async Task CreateRecipe()
+    {
+        await Http.SendJsonAsync(HttpMethod.Post, "/api/Recipe/create", recipe);
+        Navigation.NavigateTo("/fetchrecipe");
+    }
+    void cancel()
+    {
+        Navigation.NavigateTo("/fetchrecipe");
+    }
+}  

@@ -1,0 +1,52 @@
+﻿@using BlazorCRUDApp.Shared.Models
+@page "/delete/{recipeId}"
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+
+<h2>Delete</h2>
+<h3>Are you sure you want to delete recipe : @recipe.Name</h3>
+<br />
+<div class="col-md-4">
+    <table class="table">
+        <tr>
+            <td>Name</td>
+            <td>@recipe.Name</td>
+        </tr>
+        <tr>
+            <td>Ingredients</td>
+            <td>@recipe.Ingredients</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>@recipe.Description</td>
+        </tr>
+        <tr>
+            <td>Notes</td>
+            <td>@recipe.Notes</td>
+        </tr>
+    </table>
+    <div class="form-group">
+        <input type="submit" value="Delete" @onclick="@(async () => await Delete())" class="btn btn-primary" />
+        <input type="submit" value="Cancel" @onclick="@cancel" class="btn btn-warning" />
+    </div>
+</div>
+
+@functions {
+    [Parameter]
+    public string recipeId { get; set; }
+    Recipe recipe = new Recipe();
+    protected override async Task OnInitializedAsync()
+    {
+        recipe = await Http.GetJsonAsync<Recipe>
+        ("/api/Recipe/detail/" + Convert.ToInt32(recipeId));
+    }
+    protected async Task Delete()
+    {
+        await Http.DeleteAsync("api/Recipe/delete/" + Convert.ToInt32(recipeId));
+        Navigation.NavigateTo("/fetchrecipe");
+    }
+    void cancel()
+    {
+        Navigation.NavigateTo("/fetchrecipe");
+    }
+}    

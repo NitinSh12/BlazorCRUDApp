@@ -1,0 +1,52 @@
+﻿@using BlazorCRUDApp.Shared.Models
+@page "/editrecipe/{recipeId}"
+@inject HttpClient Http
+@inject Microsoft.AspNetCore.Components.NavigationManager Navigation
+
+<h2>Edit Recipe</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input for="Name" class="form-control" @bind="@recipe.Name" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Ingredients" class="control-label">Ingredients</label>
+                <textarea asp-for="Ingredients" class="form-control" @bind="@recipe.Ingredients"> </textarea>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label">Description</label>
+                <textarea asp-for="Description" class="form-control" @bind="@recipe.Description"> </textarea>
+            </div>
+            <div class=" form-group">
+                <label asp-for="Notes" class="control-label">Notes</label>
+                <textarea asp-for="Notes" class="form-control" @bind="@recipe.Notes" > </textarea>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" @onclick="@(async () => await UpdateRecipe())" class="btn btn-primary" />
+                <input type="submit" value="Cancel" @onclick="@cancel" class="btn btn-warning" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@functions {
+    [Parameter]
+    public string recipeId { get; set; }
+    public Recipe recipe = new Recipe();
+    protected override async Task OnInitializedAsync()
+    {
+        recipe = await Http.GetJsonAsync<Recipe>("/api/Recipe/detail/" + Convert.ToInt32(recipeId));
+    }
+    protected async Task UpdateRecipe()
+    {
+        await Http.SendJsonAsync(HttpMethod.Put, "api/Recipe/edit", recipe);
+        Navigation.NavigateTo("/fetchrecipe");
+    }
+    void cancel()
+    {
+        Navigation.NavigateTo("/fetchrecipe");
+    }
+}  
